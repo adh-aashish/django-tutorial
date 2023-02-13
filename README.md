@@ -1,27 +1,53 @@
-# Part-1
+# Part-2
 
-After installation of Django, go to the directory where you want to create project
-``` bash
-django-admin startproject mysite
-```
-This inturn creates the following files and folders
-![image](https://user-images.githubusercontent.com/64474508/218244603-b2e18eca-ee93-4a9e-9405-4f8900063be8.png)
+### Database Setup
 
-Go to the outer mysite directory
+We are using SQLite which is already included in python thus won't need
+to anything else to support the database.
+
+### 'migrate' Command
+This command look at the **INSTALLED_APPS** setting and creates any necessary
+database tables accoroding to the database setting in **mysite\setting.py**,
+and database migrations shipped with the app.
 ```bash
-python manage.py runserver
+$ python manage.py migrate
 ```
-
-Visit [http://127.0.0.1:8000/](visit http://127.0.0.1:8000/)
-
-## Creating a poll App
-Go to the directory containing manage.py
+After this command you can run command-line client for sql as
 ```bash
-python manage.py startapp polls
+sqlite3 db.sqlite3
+.tables
 ```
-![image](https://user-images.githubusercontent.com/64474508/218245274-24fa2b04-4456-44ea-9011-431876c8c5e3.png)
-- create views in views.py
-- to call that view, map to a url in urls.py of poll app
-- point the root URLconf at the polls.urls module
-- for that use include() method; Whenever Django encounters include(), it chops off whatever part of the URL matched up to that point and sends the remaining string to the included URLconf for further processing.
-- path() method takes urls, view, kwargs, name
+This shows all the tables created by the migrate command
+
+### Creating Models
+To create models, create python class that subclasses **django.db.models.Model**
+Each field is represented by instance of a Field class i.e CharField that tells
+django what type of data each field holds.
+Check polls/models.py
+
+### Activating Models
+Tell our project that polls app is installed by adding a reference to its
+configuration class in the INSTALLED_APPS in mysite/setting.py, i.e PollsConfig class **polls/apps.py**
+
+### makemigration command
+By running makemigrations, you’re telling Django that you’ve made some changes to your models 
+(in this case, you’ve made new ones) and that you’d like the changes to be stored as a migration.
+```bash
+$ python manage.py makemigration polls
+```
+This create **polls/migrations/0001_initial.py** <br>
+After creation of migrations, finally use migrate command to bring changes to the models
+```bash
+$ python manage.py migrate
+```
+The three-step guide to making model changes:
+
+- Change your models (in models.py).
+- Run python manage.py makemigrations to create migrations for those changes
+- Run python manage.py migrate to apply those changes to the database.
+
+### Python interractive shell
+```bash
+$ python manage.py shell
+```
+
